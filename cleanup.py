@@ -1,14 +1,13 @@
 
 import os
-import zipfile
+from pyunpack import Archive
 
-dir_name = "."
-extension = ".zip"
+dirs = ['.']
+exts = ['.zip', '.rar']
 
-for item in os.listdir(dir_name): # loop through items in dir
-    if item.endswith(extension): # check for ".zip" extension
-        file_name = os.path.abspath(item) # get full path of files
-        zip_ref = zipfile.ZipFile(file_name) # create zipfile object
-        zip_ref.extractall(dir_name) # extract file to dir
-        zip_ref.close() # close file
-        os.remove(file_name) # delete zipped file
+for item in os.listdir(dirs[0]):
+    if item.endswith(tuple(exts)):
+        file_name = os.path.abspath(item)
+        print("extracting " + str(file_name))
+        Archive(file_name).extractall(dirs[0])
+        os.remove(file_name)
