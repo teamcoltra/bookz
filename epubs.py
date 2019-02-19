@@ -22,56 +22,59 @@ def create_connection(db):
 def select_author(conn, author):
     sql = ''' SELECT ? FROM Authors '''
     cur = conn.cursor()
-    cur.execute(sql, author)
+    cur.execute("SELECT ? FROM Authors", (author,))
     return cur.lastrowid
 
 
 def insert_author(conn, author):
     sql = ''' INSERT INTO Authors(Name) VALUES(?) '''
     cur = conn.cursor()
-    cur.execute(sql, author)
+    cur.execute("INSERT INTO Authors(Name) VALUES(?)", (author,))
     return cur.lastrowid
 
 
 def select_series(conn, series):
     sql = ''' SELECT ? FROM Series '''
     cur = conn.cursor()
-    cur.execute(sql, series)
+    cur.execute("SELECT ? FROM Series", (series,))
     return cur.lastrowid
 
 
 def insert_series(conn, series):
     sql = ''' INSERT INTO Series(Name) VALUES(?) '''
     cur = conn.cursor()
-    cur.execute(sql, series)
+    cur.execute("INSERT INTO Series(Name) VALUES(?)", (series,))
     return cur.lastrowid
 
 
 def select_server(conn, server):
-    sql = 'SELECT ServerId FROM Servers WHERE handle = "' + str(server) + '";'
+    #sql = 'SELECT ServerId FROM Servers WHERE handle = "' + str(server) + '";'
+    sql = "SELECT ServerId FROM Servers WHERE handle = ?", (str(server),)
     cur = conn.cursor()
-    cur.execute(sql, server)
+    #cur.execute(sql, server)
+    cur.execute("SELECT ServerId FROM Servers WHERE handle = ?", (server,))
     return cur.lastrowid
 
 
 def insert_server(conn, server):
     sql = ''' INSERT INTO Servers(Handle) VALUES(?) '''
     cur = conn.cursor()
-    cur.execute(sql, server)
+    #cur.execute(sql, server)
+    cur.execute("INSERT INTO Servers(Handle) VALUES(?)", (server,))
     return cur.lastrowid
 
 
 def select_book(conn, title):
     sql = ''' SELECT ? FROM Books '''
     cur = conn.cursor()
-    cur.execute(sql, book)
+    cur.execute("SELECT ? FROM Books", (title,))
     return cur.lastrowid
 
 
 def insert_book(conn, server, author, series, title):
-    sql = ''' INSERT INTO Books(ServerId, AuthorId, SeriesId, Title) VALUES(?,?,?,?) '''
+    #sql = ''' INSERT INTO Books(ServerId, AuthorId, SeriesId, Title) VALUES(?,?,?,?) '''
     cur = conn.cursor()
-    cur.execute(sql, book)
+    cur.execute("INSERT INTO Books(ServerId, AuthorId, SeriesId, Title) VALUES(?,?,?,?)", (server,author,series,title))
     return cur.lastrowid
 
 
@@ -115,7 +118,7 @@ def save_series(string):
 
     title=section[2].split(':')
     title_id=select_book(conn, title[1])
-    if not select_id:
+    if not title_id:
         title_id=insert_book(conn, server_id, author_id, series_id, title[1])
 
     return
@@ -234,7 +237,7 @@ conn = create_connection(database)
 with conn:
     for file in os.listdir(dirs[0]):
         if file.endswith(tuple(exts)):
-            file_name=os.path.abspath(dirs[0]+"\\"+file)
+            file_name=os.path.abspath(dirs[0]+"/"+file)
             print("file: " + str(file_name))
             for line in open(file_name):
                 if any(format in str(line) for format in formats) and any(server in str(line) for server in servers):
